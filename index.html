@@ -33,60 +33,56 @@
 	</div>
 	
 	<script>
-		function validate(t){
-            if(isNaN(t)){
-                    msg = "Please verify whether the temperature value is correct!!!";
-                    alert(msg);
-                    return false;
-               }
-               else if((t < 0 || t > 100)){
-                    msg = "Tempurature entered (in Celsius) must be between 0 and 100 C'";
-                    alert(msg);
-                    return false;
-               }
-               else return true;
-        }
-		function tempCal(t,u){
-            var t1;
-            var u1;
-
-            if(u == "F"){
-                    t1 = t * (9/5) + 32;
-                    u1 = "Fahrenheit"; 
-                    return [t1,u1];
-               }else if(u == "K"){
-                    t1 =  parseInt(t) + 273.15; 
-                    u1 = "Kelvin";
-                    return [t1,u1];
-               }else if(u == "R"){
-                    t1 = t * (4/5);
-                    u1 = "Réaumur";
-                    return [t1,u1];
-               }
-
-        }
-	    $(document).ready(function(){
+		// Refactor function temperatureConversion
+		function temperatureConversion(t, u) {
+			var t1;
+			if (u === "F") {
+				t1 = t * (9/5) + 32;
+			} else if (u === "K") {
+				t1 = t + 273.15;
+			} else if (u === "R") {
+				t1 = t * (4/5);
+			} else {
+				alert("Invalid unit specified.");
+				return null;
+			}
+			return t1;
+		}
+	
+		// Refactor function validate
+		function validate(t, u) {
+			var t1 = temperatureConversion(t, u);
+			if (t1 === null) {
+				return null;
+			}
+	
+			var u1;
+			if (u === "F") {
+				u1 = "Fahrenheit";
+			} else if (u === "K") {
+				u1 = "Kelvin";
+			} else if (u === "R") {
+				u1 = "Réaumur";
+			}
+	
+			return { t1: t1, u1: u1 };
+		}
+	
+		$(document).ready(function(){
 			$("button").click(function(){
-			   var t = $('#temp').val();//celsius
-			   var u = $('#unit').val();
-			   
-			   
-			   
-			   var t1;
-			   var u1;
-			   
-			   if(u == "F"){
-					t1 = t * (9/5) + 32;
-					u1 = "Fahrenheit";
-			   }else if(u == "K"){
-					t1 =  t + 273.15;
-					u1 = "Réaumur";
-			   }else if(u == "R"){
-					t1 = t * (4/5);
-					u1 = "Kelvin";
-			   }
-			   
-			   alert("Temperature is "+t1+" in "+u1);
+				var t = parseFloat($('#temp').val()); // Celsius
+				var u = $('#unit').val();
+	
+				var result = validate(t, u);
+				if (result === null) {
+					return;
+				}
+	
+				var t1 = result.t1;
+				var u1 = result.u1;
+	
+				// Update the content of the result element
+				$('#result').text("Temperature is " + t1.toFixed(2) + " in " + u1);
 			});
 		});
 	</script>
